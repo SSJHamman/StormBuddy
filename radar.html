@@ -1,1 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StormBuddy Radar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #5ca9ff;
+      --dark: #102a43;
+      --light: #f4f9fe;
+      --nav-height: 70px;
+      --accent: #0072ff;
+    }
 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    .navbar {
+      height: var(--nav-height);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      border-bottom: 1px solid #e1e7ef;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: color 0.3s;
+      cursor: pointer;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    main {
+      max-width: 600px;
+      margin: 4rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+
+    p {
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+      color: #334e68;
+    }
+
+    input[type="text"] {
+      width: 80%;
+      max-width: 300px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccd6e0;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    button {
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #005cd0;
+    }
+
+    #output {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: var(--dark);
+      min-height: 2rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: #fff;
+      font-size: 0.9rem;
+      color: #768ca3;
+      margin-top: 4rem;
+      border-top: 1px solid #e0e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">🌩️ StormBuddy</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+    </div>
+  </nav>
+
+  <main>
+    <h1>Weather Radar</h1>
+    <p>Enter your location or ZIP code to view radar info.</p>
+    <input type="text" id="locationInput" placeholder="City, State or ZIP code" />
+    <br />
+    <button id="submitLocation">Submit</button>
+    <div id="output"></div>
+  </main>
+
+  <footer>
+    &copy; 2025 StormBuddy, Inc. All rights reserved.
+  </footer>
+
+  <script>
+    const submitBtn = document.getElementById('submitLocation');
+    const locationInput = document.getElementById('locationInput');
+    const output = document.getElementById('output');
+
+    submitBtn.addEventListener('click', () => {
+      const loc = locationInput.value.trim();
+      if (!loc) {
+        alert('Please enter a location or ZIP code.');
+        return;
+      }
+      output.textContent = `You entered: ${loc}`;
+    });
+
+    locationInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        submitBtn.click();
+      }
+    });
+  </script>
+
+</body>
+</html>
