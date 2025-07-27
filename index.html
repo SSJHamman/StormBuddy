@@ -2,18 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>StormBuddy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --primary: #61a5ff;
-      --secondary: #f0f4f8;
-      --accent: #0056d6;
-      --bg-gradient: linear-gradient(135deg, #dbefff, #a7d8f7);
-      --glass: rgba(255, 255, 255, 0.4);
-      --text-dark: #1e2a38;
-      --text-light: #5b6b7f;
+      --primary: #5ca9ff;
+      --dark: #102a43;
+      --light: #f4f9fe;
+      --nav-height: 70px;
+      --accent: #0072ff;
     }
 
     * {
@@ -23,135 +21,130 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-dark);
-      min-height: 100vh;
+      font-family: 'Outfit', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    /* Top nav */
+    .navbar {
+      height: var(--nav-height);
+      background: #fff;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      border-bottom: 1px solid #e1e7ef;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
 
-    header {
-      padding: 2rem;
-      text-align: center;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
+    .logo {
+      font-size: 1.6rem;
       font-weight: 700;
       color: var(--accent);
-    }
-
-    .app-container {
-      background: white;
-      max-width: 960px;
-      width: 90%;
-      border-radius: 1rem;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-    }
-
-    nav {
       display: flex;
-      background: var(--secondary);
-      border-bottom: 1px solid #ccc;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .tab-button {
-      flex: 1;
-      padding: 1rem;
-      text-align: center;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-      border: none;
-      background: transparent;
+    .nav-links {
+      display: flex;
+      gap: 2rem;
     }
 
-    .tab-button:hover {
-      background: #eaf3fa;
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: color 0.3s;
     }
 
-    .tab-button.active {
-      background: white;
-      border-bottom: 3px solid var(--primary);
+    .nav-links a:hover {
       color: var(--accent);
     }
 
-    .tab-content {
-      display: none;
-      padding: 2rem;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    /* Hero Section */
     .hero {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 2rem;
+      padding: 4rem 5%;
+      background: linear-gradient(135deg, #d2edff, #a0d8ff);
     }
 
-    .mascot-glass {
-      background: var(--glass);
-      backdrop-filter: blur(10px);
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-      flex: 1;
-      min-width: 250px;
-      text-align: center;
+    .hero-text {
+      max-width: 600px;
     }
 
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #334e68;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .cta {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.9rem 2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    .cta:hover {
+      background: #005cd0;
+    }
+
+    /* Mascot */
     .mascot {
-      width: 140px;
-      height: 200px;
       position: relative;
-      margin: 0 auto 1rem;
+      width: 200px;
+      height: 270px;
       animation: float 4s ease-in-out infinite;
     }
 
     .balloon {
-      width: 120px;
-      height: 160px;
+      width: 160px;
+      height: 220px;
       background: var(--primary);
       border-radius: 60% 60% 50% 50% / 70% 70% 50% 50%;
-      box-shadow: inset -5px -7px 15px rgba(0, 0, 0, 0.1);
-      position: relative;
       margin: 0 auto;
+      position: relative;
+      box-shadow: inset -5px -7px 20px rgba(0,0,0,0.1);
     }
 
     .eye {
       position: absolute;
-      top: 55px;
-      width: 18px;
-      height: 18px;
+      top: 70px;
+      width: 22px;
+      height: 22px;
       background: #000;
       border-radius: 50%;
     }
 
-    .eye.left { left: 30px; }
-    .eye.right { right: 30px; }
+    .eye.left { left: 40px; }
+    .eye.right { right: 40px; }
 
     .string {
       width: 4px;
-      height: 50px;
+      height: 60px;
       background: #7db9e8;
       margin: 0 auto;
       border-radius: 2px;
-      position: relative;
       top: -10px;
-      animation: string-sway 4s ease-in-out infinite;
+      position: relative;
     }
 
     @keyframes float {
@@ -159,141 +152,69 @@
       50% { transform: translateY(-12px); }
     }
 
-    @keyframes string-sway {
-      0%, 100% { transform: rotate(0deg); }
-      50% { transform: rotate(6deg); }
-    }
-
-    .intro {
-      flex: 2;
-      min-width: 250px;
-      font-size: 1.2rem;
-      color: var(--text-light);
-    }
-
-    .customize-options {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .color-choice {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.2s;
-    }
-
-    .color-choice:hover {
-      transform: scale(1.1);
-    }
-
+    /* Footer */
     footer {
       text-align: center;
-      padding: 1.5rem;
+      padding: 2rem 1rem;
+      background: #fff;
       font-size: 0.9rem;
-      color: #777;
-      margin-top: auto;
+      color: #768ca3;
+      margin-top: 4rem;
+      border-top: 1px solid #e0e8f0;
     }
 
     @media (max-width: 768px) {
       .hero {
         flex-direction: column;
         text-align: center;
+        gap: 3rem;
       }
 
-      nav {
-        flex-direction: column;
+      .hero-text h1 {
+        font-size: 2.4rem;
       }
 
-      .tab-button {
-        border-bottom: 1px solid #ddd;
-      }
-
-      .tab-button.active {
-        border-bottom: 3px solid var(--primary);
+      .nav-links {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>🌩️ StormBuddy</h1>
-    <p style="color:#445a6f;">Your personal storm companion — calm, cute, and always with you.</p>
-  </header>
+  <!-- Top Nav -->
+  <nav class="navbar">
+    <div class="logo">
+      🌩️ StormBuddy
+    </div>
+    <div class="nav-links">
+      <a href="#">Home</a>
+      <a href="#">Customize</a>
+      <a href="#">Radar</a>
+      <a href="#">Sign In</a>
+    </div>
+  </nav>
 
-  <div class="app-container">
-    <nav>
-      <button class="tab-button active" onclick="switchTab('home')">Home</button>
-      <button class="tab-button" onclick="switchTab('customize')">Customize</button>
-      <button class="tab-button" onclick="switchTab('radar')">Radar</button>
-      <button class="tab-button" onclick="switchTab('settings')">Settings</button>
-    </nav>
-
-    <div id="home" class="tab-content active">
-      <div class="hero">
-        <div class="mascot-glass">
-          <div class="mascot">
-            <div class="balloon" id="balloon">
-              <div class="eye left"></div>
-              <div class="eye right"></div>
-            </div>
-            <div class="string"></div>
-          </div>
-        </div>
-        <div class="intro">
-          <h2>Hello! I’m StormBuddy 🎈</h2>
-          <p>
-            I'm your gentle guide through rough weather. Whether you're tracking a storm or just need a friendly face,
-            I'm here to help you stay calm and safe.
-          </p>
-        </div>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Your Calm in the Storm</h1>
+      <p>Meet StormBuddy — a friendly, customizable balloon that helps you track weather, stay safe, and feel calm during rough conditions.</p>
+      <button class="cta">Customize Your Buddy</button>
+    </div>
+    <div class="mascot">
+      <div class="balloon">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
       </div>
+      <div class="string"></div>
     </div>
+  </section>
 
-    <div id="customize" class="tab-content">
-      <h2>🎨 Customize Your StormBuddy</h2>
-      <p>Choose a balloon color below:</p>
-      <div class="customize-options">
-        <div class="color-choice" style="background: #61a5ff;" onclick="setBalloonColor('#61a5ff')"></div>
-        <div class="color-choice" style="background: #ffb3c1;" onclick="setBalloonColor('#ffb3c1')"></div>
-        <div class="color-choice" style="background: #fcd5b5;" onclick="setBalloonColor('#fcd5b5')"></div>
-        <div class="color-choice" style="background: #b5ead7;" onclick="setBalloonColor('#b5ead7')"></div>
-        <div class="color-choice" style="background: #c7ceea;" onclick="setBalloonColor('#c7ceea')"></div>
-      </div>
-    </div>
-
-    <div id="radar" class="tab-content">
-      <h2>📍 Storm Radar (Coming Soon)</h2>
-      <p>This is where you’ll see local storm radar based on your location.</p>
-    </div>
-
-    <div id="settings" class="tab-content">
-      <h2>⚙️ Settings</h2>
-      <p>Options and preferences will live here.</p>
-    </div>
-  </div>
-
+  <!-- Footer -->
   <footer>
-    &copy; 2025 StormBuddy. Designed with calm and care.
+    &copy; 2025 StormBuddy, Inc. All rights reserved.
   </footer>
-
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
-    }
-
-    function setBalloonColor(color) {
-      document.getElementById('balloon').style.background = color;
-    }
-  </script>
 
 </body>
 </html>
