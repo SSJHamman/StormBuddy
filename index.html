@@ -4,40 +4,220 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>StormBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 2rem;
-      background: #e0f7fa;
+    :root {
+      --primary-blue: #a7d8f7;
+      --bg-gradient-start: #d0f0fd;
+      --bg-gradient-end: #a1d4f7;
+      --shadow-color: rgba(0, 0, 0, 0.15);
+      --text-color: #013a63;
+      --input-bg: #e8f5fd;
+      --input-border: #b2d6fb;
+      --btn-bg: #0288d1;
+      --btn-hover-bg: #026fa1;
     }
-    .mascot-container {
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      color: var(--text-color);
       display: flex;
+      flex-direction: column;
+      min-height: 100vh;
       align-items: center;
       justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
+      padding: 2rem;
+      text-align: center;
     }
-    .mascot-container img {
+
+    h1 {
+      font-weight: 600;
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+
+    .mascot {
+      margin: 2rem auto 1rem;
+      width: 140px;
+      height: 200px;
+      position: relative;
+      animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 5px 5px var(--shadow-color));
+    }
+
+    /* Balloon shape */
+    .balloon {
       width: 120px;
-      height: auto;
-      border-radius: 20%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      height: 160px;
+      background: var(--primary-blue);
+      border-radius: 60% 60% 50% 50% / 70% 70% 50% 50%;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: inset -5px -7px 15px #8ec9ff;
     }
-    .mascot-text {
-      font-size: 1.5rem;
-      max-width: 300px;
-      text-align: left;
+
+    /* Balloon eyes */
+    .eye {
+      position: absolute;
+      top: 55px;
+      width: 18px;
+      height: 18px;
+      background: #000;
+      border-radius: 50%;
+      filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+    }
+
+    .eye.left {
+      left: 30px;
+    }
+
+    .eye.right {
+      right: 30px;
+    }
+
+    /* Balloon string */
+    .string {
+      width: 4px;
+      height: 50px;
+      background: #7db9e8;
+      margin: 0 auto;
+      border-radius: 2px;
+      position: relative;
+      top: -10px;
+      filter: drop-shadow(0 2px 1px var(--shadow-color));
+      animation: string-sway 4s ease-in-out infinite;
+    }
+
+    /* Gentle floating animation */
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-12px);
+      }
+    }
+
+    /* Sway animation for string */
+    @keyframes string-sway {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      50% {
+        transform: rotate(6deg);
+      }
+    }
+
+    .intro-text {
+      font-size: 1.3rem;
+      max-width: 350px;
+      margin: 0 auto 2rem;
+      line-height: 1.4;
+      user-select: none;
+    }
+
+    form {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    input[type="text"] {
+      flex: 1 1 200px;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: 2px solid var(--input-border);
+      background: var(--input-bg);
+      transition: border-color 0.3s ease;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--btn-bg);
+      background: #d9f1ff;
+    }
+
+    button {
+      background: var(--btn-bg);
+      border: none;
+      color: white;
+      padding: 0.85rem 1.8rem;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+
+    button:hover,
+    button:focus {
+      background: var(--btn-hover-bg);
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.9rem;
+      color: #666;
+      user-select: none;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 2rem;
+      }
+      .intro-text {
+        font-size: 1.1rem;
+        max-width: 90vw;
+      }
+      form {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      input[type="text"] {
+        flex-basis: 100%;
+      }
+      button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
+
   <h1>🌩️ Welcome to StormBuddy!</h1>
 
-  <div class="mascot-container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Cloud_icon.svg/120px-Cloud_icon.svg.png" alt="StormBuddy Mascot" />
-    <p class="mascot-text">Hi! I'm StormBuddy, your friendly weather guide. I’ll help you stay safe and calm during storms.</p>
+  <div class="mascot" role="img" aria-label="Pastel blue balloon mascot with eyes floating gently">
+    <div class="balloon">
+      <div class="eye left"></div>
+      <div class="eye right"></div>
+    </div>
+    <div class="string"></div>
   </div>
+
+  <p class="intro-text">
+    Hi! I'm StormBuddy, your friendly weather guide. I’ll help you stay safe and calm during storms.
+  </p>
+
+  <form id="location-form" aria-label="Enter your location for storm radar">
+    <input type="text" id="location-input" name="location" placeholder="Enter your city or ZIP code" autocomplete="off" required />
+    <button type="submit">Check Radar</button>
+  </form>
+
+  <footer>
+    &copy; 2025 StormBuddy — Stay safe and weather-wise!
+  </footer>
 
 </body>
 </html>
