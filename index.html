@@ -26,7 +26,6 @@
       color: var(--dark);
     }
 
-    /* Top nav */
     .navbar {
       height: var(--nav-height);
       background: #fff;
@@ -66,7 +65,6 @@
       color: var(--accent);
     }
 
-    /* Hero Section */
     .hero {
       display: flex;
       align-items: center;
@@ -109,7 +107,6 @@
       background: #005cd0;
     }
 
-    /* Mascot */
     .mascot {
       position: relative;
       width: 200px;
@@ -135,7 +132,6 @@
       height: 22px;
       background: #000;
       border-radius: 50%;
-      transition: background 0.3s ease;
     }
 
     .eye.left { left: 40px; }
@@ -156,7 +152,6 @@
       50% { transform: translateY(-12px); }
     }
 
-    /* Customization panel */
     .customization {
       max-width: 800px;
       margin: 2rem auto;
@@ -173,20 +168,28 @@
       display: flex;
     }
 
-    .customization label {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      display: block;
+    .color-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: start;
     }
 
-    .customization input[type="color"] {
-      width: 100px;
+    .color-swatch {
+      width: 40px;
       height: 40px;
-      border: none;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
       cursor: pointer;
+      transition: transform 0.2s;
     }
 
-    /* Footer */
+    .color-swatch:hover {
+      transform: scale(1.1);
+      border-color: var(--accent);
+    }
+
     footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -216,11 +219,8 @@
 </head>
 <body>
 
-  <!-- Top Nav -->
   <nav class="navbar">
-    <div class="logo">
-      🌩️ StormBuddy
-    </div>
+    <div class="logo">🌩️ StormBuddy</div>
     <div class="nav-links">
       <a id="nav-home" href="#">Home</a>
       <a id="nav-customize" href="#">Customize</a>
@@ -229,7 +229,6 @@
     </div>
   </nav>
 
-  <!-- Hero -->
   <section class="hero">
     <div class="hero-text">
       <h1>Your Calm in the Storm</h1>
@@ -245,18 +244,28 @@
     </div>
   </section>
 
-  <!-- Customization Panel -->
   <section id="customizationPanel" class="customization">
     <h2>Customize Your StormBuddy</h2>
 
-    <label for="colorPicker">Balloon Color</label>
-    <input type="color" id="colorPicker" value="#5ca9ff" />
+    <label>Balloon Color</label>
+    <div class="color-swatches">
+      <div class="color-swatch" style="background:#FFCDD2;" data-color="#FFCDD2"></div>
+      <div class="color-swatch" style="background:#F8BBD0;" data-color="#F8BBD0"></div>
+      <div class="color-swatch" style="background:#E1BEE7;" data-color="#E1BEE7"></div>
+      <div class="color-swatch" style="background:#D1C4E9;" data-color="#D1C4E9"></div>
+      <div class="color-swatch" style="background:#B3E5FC;" data-color="#B3E5FC"></div>
+      <div class="color-swatch" style="background:#B2EBF2;" data-color="#B2EBF2"></div>
+      <div class="color-swatch" style="background:#C8E6C9;" data-color="#C8E6C9"></div>
+      <div class="color-swatch" style="background:#FFF9C4;" data-color="#FFF9C4"></div>
+      <div class="color-swatch" style="background:#FFE0B2;" data-color="#FFE0B2"></div>
+      <div class="color-swatch" style="background:#FFAB91;" data-color="#FFAB91"></div>
+      <div class="color-swatch" style="background:#CFD8DC;" data-color="#CFD8DC"></div>
+    </div>
 
-    <label for="eyeColorPicker">Eye Color</label>
-    <input type="color" id="eyeColorPicker" value="#000000" />
+    <label>Eye Color</label>
+    <p style="color: gray;">Coming soon!</p>
   </section>
 
-  <!-- Footer -->
   <footer>
     &copy; 2025 StormBuddy, Inc. All rights reserved.
   </footer>
@@ -266,18 +275,10 @@
     const navCustomize = document.getElementById('nav-customize');
     const customizationPanel = document.getElementById('customizationPanel');
     const balloon = document.getElementById('balloon');
-    const eyeLeft = balloon.querySelector('.eye.left');
-    const eyeRight = balloon.querySelector('.eye.right');
-    const colorPicker = document.getElementById('colorPicker');
-    const eyeColorPicker = document.getElementById('eyeColorPicker');
 
     function toggleCustomization() {
-      if (customizationPanel.classList.contains('active')) {
-        customizationPanel.classList.remove('active');
-      } else {
-        customizationPanel.classList.add('active');
-        customizationPanel.scrollIntoView({ behavior: 'smooth' });
-      }
+      customizationPanel.classList.toggle('active');
+      customizationPanel.scrollIntoView({ behavior: 'smooth' });
     }
 
     customizeBtn.addEventListener('click', toggleCustomization);
@@ -286,13 +287,11 @@
       toggleCustomization();
     });
 
-    colorPicker.addEventListener('input', e => {
-      balloon.style.background = e.target.value;
-    });
-
-    eyeColorPicker.addEventListener('input', e => {
-      eyeLeft.style.background = e.target.value;
-      eyeRight.style.background = e.target.value;
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+      swatch.addEventListener('click', () => {
+        const color = swatch.getAttribute('data-color');
+        balloon.style.background = color;
+      });
     });
   </script>
 
