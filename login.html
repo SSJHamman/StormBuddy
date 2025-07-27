@@ -1,108 +1,184 @@
-<!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - StormBuddy</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StormBuddy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --primary: #5ca9ff;
-      --accent: #0072ff;
-      --bg: #f4f9fe;
       --dark: #102a43;
+      --light: #f4f9fe;
+      --nav-height: 70px;
+      --accent: #0072ff;
     }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Outfit', sans-serif;
-      background: var(--bg);
-      margin: 0;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    /* Top nav */
+    .navbar {
+      height: var(--nav-height);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      border-bottom: 1px solid #e1e7ef;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+
+    .auth-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      flex-direction: column;
+      padding: 4rem 2rem;
     }
-    .container {
-      background: white;
+
+    .auth-box {
+      background: #fff;
+      border: 1px solid #e1e7ef;
+      border-radius: 10px;
       padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
-    h2 {
-      margin-top: 0;
-      color: var(--accent);
-      text-align: center;
+
+    .auth-box h2 {
+      margin-bottom: 1.5rem;
+      color: var(--dark);
     }
-    input {
+
+    .auth-box input {
       width: 100%;
-      padding: 0.75rem;
-      margin-top: 1rem;
-      border: 1px solid #ccc;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccd6e0;
       border-radius: 8px;
       font-size: 1rem;
     }
-    button {
+
+    .auth-box button {
       width: 100%;
-      margin-top: 1.5rem;
       padding: 0.75rem;
       background: var(--accent);
-      color: white;
+      color: #fff;
       border: none;
       border-radius: 8px;
+      font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
+      transition: background 0.3s;
     }
-    button:hover {
-      background: #005dd1;
+
+    .auth-box button:hover {
+      background: #005cd0;
     }
-    .switch {
-      text-align: center;
+
+    .toggle-link {
       margin-top: 1rem;
-      font-size: 0.9rem;
-    }
-    .switch a {
       color: var(--accent);
+      font-size: 0.95rem;
       cursor: pointer;
-      text-decoration: underline;
+      text-align: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: #fff;
+      font-size: 0.9rem;
+      color: #768ca3;
+      margin-top: 4rem;
+      border-top: 1px solid #e0e8f0;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2 id="formTitle">Sign In</h2>
-    <form id="authForm">
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Password" required>
-      <button type="submit">Continue</button>
-    </form>
-    <div class="switch">
-      <span id="switchText">Don't have an account?</span>
-      <a id="switchLink">Sign up</a>
+  <!-- Top Nav -->
+  <nav class="navbar">
+    <div class="logo">🌩️ StormBuddy</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+    </div>
+  </nav>
+
+  <!-- Login/Signup -->
+  <div class="auth-container">
+    <div class="auth-box" id="authBox">
+      <h2 id="authTitle">Login</h2>
+      <input type="email" placeholder="Email" id="email" />
+      <input type="password" placeholder="Password" id="password" />
+      <button onclick="submitAuth()">Login</button>
+      <div class="toggle-link" onclick="toggleAuth()">Don't have an account? Sign up</div>
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 StormBuddy, Inc. All rights reserved.
+  </footer>
+
   <script>
-    const formTitle = document.getElementById('formTitle');
-    const switchText = document.getElementById('switchText');
-    const switchLink = document.getElementById('switchLink');
-    const authForm = document.getElementById('authForm');
     let isLogin = true;
-
-    switchLink.addEventListener('click', () => {
+    function toggleAuth() {
+      const title = document.getElementById("authTitle");
+      const button = document.querySelector(".auth-box button");
+      const toggle = document.querySelector(".toggle-link");
       isLogin = !isLogin;
-      formTitle.textContent = isLogin ? 'Sign In' : 'Sign Up';
-      switchText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
-      switchLink.textContent = isLogin ? 'Sign up' : 'Sign in';
-    });
+      title.textContent = isLogin ? "Login" : "Sign Up";
+      button.textContent = isLogin ? "Login" : "Sign Up";
+      toggle.textContent = isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+    }
 
-    authForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+    function submitAuth() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
       alert(`${isLogin ? 'Logging in' : 'Signing up'} with ${email}`);
-    });
+    }
   </script>
 </body>
 </html>
