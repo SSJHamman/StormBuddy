@@ -10,12 +10,10 @@
       --primary-blue: #a7d8f7;
       --bg-gradient-start: #d0f0fd;
       --bg-gradient-end: #a1d4f7;
-      --shadow-color: rgba(0, 0, 0, 0.15);
       --text-color: #013a63;
-      --input-bg: #e8f5fd;
-      --input-border: #b2d6fb;
-      --btn-bg: #0288d1;
-      --btn-hover-bg: #026fa1;
+      --tab-color: #e0f7fa;
+      --tab-active: #ffffff;
+      --accent: #0288d1;
     }
 
     * {
@@ -24,35 +22,70 @@
 
     body {
       margin: 0;
-      font-family: 'Poppins', Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
       color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
+    }
+
+    header {
+      padding: 1.5rem;
       text-align: center;
+      background: var(--primary-blue);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    h1 {
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: var(--tab-color);
+      box-shadow: inset 0 -1px 0 #ccc;
+    }
+
+    .tab-button {
+      padding: 1rem 1.5rem;
+      cursor: pointer;
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
+
+    .tab-button.active {
+      background: var(--tab-active);
+      border-bottom: 3px solid var(--accent);
       font-weight: 600;
-      font-size: 2.8rem;
-      margin-bottom: 1rem;
-      user-select: none;
     }
 
+    .tab-content {
+      display: none;
+      padding: 2rem;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home mascot balloon */
     .mascot {
       margin: 2rem auto 1rem;
       width: 140px;
       height: 200px;
       position: relative;
       animation: float 4s ease-in-out infinite;
-      filter: drop-shadow(0 5px 5px var(--shadow-color));
+      filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.15));
     }
 
-    /* Balloon shape */
     .balloon {
       width: 120px;
       height: 160px;
@@ -63,7 +96,6 @@
       box-shadow: inset -5px -7px 15px #8ec9ff;
     }
 
-    /* Balloon eyes */
     .eye {
       position: absolute;
       top: 55px;
@@ -71,18 +103,11 @@
       height: 18px;
       background: #000;
       border-radius: 50%;
-      filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
     }
 
-    .eye.left {
-      left: 30px;
-    }
+    .eye.left { left: 30px; }
+    .eye.right { right: 30px; }
 
-    .eye.right {
-      right: 30px;
-    }
-
-    /* Balloon string */
     .string {
       width: 4px;
       height: 50px;
@@ -91,133 +116,121 @@
       border-radius: 2px;
       position: relative;
       top: -10px;
-      filter: drop-shadow(0 2px 1px var(--shadow-color));
       animation: string-sway 4s ease-in-out infinite;
     }
 
-    /* Gentle floating animation */
     @keyframes float {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-12px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
     }
 
-    /* Sway animation for string */
     @keyframes string-sway {
-      0%, 100% {
-        transform: rotate(0deg);
-      }
-      50% {
-        transform: rotate(6deg);
-      }
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(6deg); }
     }
 
     .intro-text {
-      font-size: 1.3rem;
-      max-width: 350px;
-      margin: 0 auto 2rem;
-      line-height: 1.4;
-      user-select: none;
-    }
-
-    form {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
+      font-size: 1.2rem;
       max-width: 400px;
       margin: 0 auto;
+      text-align: center;
     }
 
-    input[type="text"] {
-      flex: 1 1 200px;
-      padding: 0.8rem 1rem;
-      font-size: 1rem;
-      border-radius: 25px;
-      border: 2px solid var(--input-border);
-      background: var(--input-bg);
-      transition: border-color 0.3s ease;
-      outline: none;
+    .customize-options {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 1rem;
     }
 
-    input[type="text"]:focus {
-      border-color: var(--btn-bg);
-      background: #d9f1ff;
-    }
-
-    button {
-      background: var(--btn-bg);
-      border: none;
-      color: white;
-      padding: 0.85rem 1.8rem;
-      font-weight: 600;
-      font-size: 1rem;
-      border-radius: 25px;
+    .color-choice {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
+      border: 2px solid transparent;
+      transition: transform 0.2s;
     }
 
-    button:hover,
-    button:focus {
-      background: var(--btn-hover-bg);
+    .color-choice:hover {
+      transform: scale(1.1);
     }
 
     footer {
-      margin-top: 3rem;
+      text-align: center;
+      padding: 1rem;
       font-size: 0.9rem;
       color: #666;
-      user-select: none;
-    }
-
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 2rem;
-      }
-      .intro-text {
-        font-size: 1.1rem;
-        max-width: 90vw;
-      }
-      form {
-        flex-direction: column;
-        gap: 1rem;
-      }
-      input[type="text"] {
-        flex-basis: 100%;
-      }
-      button {
-        width: 100%;
-      }
     }
   </style>
 </head>
 <body>
 
-  <h1>🌩️ Welcome to StormBuddy!</h1>
+  <header>
+    <h1>🌩️ StormBuddy</h1>
+  </header>
 
-  <div class="mascot" role="img" aria-label="Pastel blue balloon mascot with eyes floating gently">
-    <div class="balloon">
-      <div class="eye left"></div>
-      <div class="eye right"></div>
+  <nav>
+    <button class="tab-button active" onclick="switchTab('home')">Home</button>
+    <button class="tab-button" onclick="switchTab('customize')">Customize</button>
+    <button class="tab-button" onclick="switchTab('radar')">Radar</button>
+    <button class="tab-button" onclick="switchTab('settings')">Settings</button>
+  </nav>
+
+  <!-- Home Tab -->
+  <div id="home" class="tab-content active">
+    <div class="mascot">
+      <div class="balloon" id="balloon">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
+      </div>
+      <div class="string"></div>
     </div>
-    <div class="string"></div>
+    <p class="intro-text">Hi! I'm StormBuddy, your friendly weather guide. I’ll help you stay safe and calm during storms.</p>
   </div>
 
-  <p class="intro-text">
-    Hi! I'm StormBuddy, your friendly weather guide. I’ll help you stay safe and calm during storms.
-  </p>
+  <!-- Customize Tab -->
+  <div id="customize" class="tab-content">
+    <h2>🎨 Customize Your Buddy</h2>
+    <p>Pick a balloon color:</p>
+    <div class="customize-options">
+      <div class="color-choice" style="background: #a7d8f7;" onclick="setBalloonColor('#a7d8f7')"></div>
+      <div class="color-choice" style="background: #f7a7dc;" onclick="setBalloonColor('#f7a7dc')"></div>
+      <div class="color-choice" style="background: #ffd6a5;" onclick="setBalloonColor('#ffd6a5')"></div>
+      <div class="color-choice" style="background: #b5ead7;" onclick="setBalloonColor('#b5ead7')"></div>
+      <div class="color-choice" style="background: #c7ceea;" onclick="setBalloonColor('#c7ceea')"></div>
+    </div>
+  </div>
 
-  <form id="location-form" aria-label="Enter your location for storm radar">
-    <input type="text" id="location-input" name="location" placeholder="Enter your city or ZIP code" autocomplete="off" required />
-    <button type="submit">Check Radar</button>
-  </form>
+  <!-- Radar Tab -->
+  <div id="radar" class="tab-content">
+    <h2>📍 Radar (Coming Soon)</h2>
+    <p>You’ll be able to enter your location and see storm radar here!</p>
+  </div>
+
+  <!-- Settings Tab -->
+  <div id="settings" class="tab-content">
+    <h2>⚙️ Settings</h2>
+    <p>Settings tab coming soon...</p>
+  </div>
 
   <footer>
     &copy; 2025 StormBuddy — Stay safe and weather-wise!
   </footer>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+    }
+
+    function setBalloonColor(color) {
+      document.getElementById('balloon').style.background = color;
+    }
+  </script>
 
 </body>
 </html>
