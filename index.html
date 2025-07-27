@@ -11,14 +11,33 @@
       margin: 2rem;
       background: #e0f7fa;
     }
-    .mascot {
-      font-size: 2rem;
-      margin-top: 1rem;
+    .mascot-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .mascot-container img {
+      width: 120px;
+      height: auto;
+      border-radius: 20%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .mascot-text {
+      font-size: 1.5rem;
+      max-width: 300px;
+      text-align: left;
     }
   </style>
 </head>
 <body>
   <h1>🌩️ Welcome to StormBuddy!</h1>
-  <p class="mascot">Hi! I'm your friendly weather helper. Let’s stay safe together.</p>
+
+  <div class="mascot-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Cloud_icon.svg/120px-Cloud_icon.svg.png" alt="StormBuddy Mascot" />
+    <p class="mascot-text">Hi! I'm StormBuddy, your friendly weather guide. I’ll help you stay safe and calm during storms.</p>
+  </div>
+
 </body>
 </html>
