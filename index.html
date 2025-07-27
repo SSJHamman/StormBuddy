@@ -59,6 +59,7 @@
       color: var(--dark);
       font-weight: 500;
       transition: color 0.3s;
+      cursor: pointer;
     }
 
     .nav-links a:hover {
@@ -72,6 +73,7 @@
       justify-content: space-between;
       padding: 4rem 5%;
       background: linear-gradient(135deg, #d2edff, #a0d8ff);
+      flex-wrap: wrap;
     }
 
     .hero-text {
@@ -123,6 +125,7 @@
       margin: 0 auto;
       position: relative;
       box-shadow: inset -5px -7px 20px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
     }
 
     .eye {
@@ -132,6 +135,7 @@
       height: 22px;
       background: #000;
       border-radius: 50%;
+      transition: background 0.3s ease;
     }
 
     .eye.left { left: 40px; }
@@ -150,6 +154,36 @@
     @keyframes float {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-12px); }
+    }
+
+    /* Customization panel */
+    .customization {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .customization.active {
+      display: flex;
+    }
+
+    .customization label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .customization input[type="color"] {
+      width: 100px;
+      height: 40px;
+      border: none;
+      cursor: pointer;
     }
 
     /* Footer */
@@ -188,8 +222,8 @@
       🌩️ StormBuddy
     </div>
     <div class="nav-links">
-      <a href="#">Home</a>
-      <a href="#">Customize</a>
+      <a id="nav-home" href="#">Home</a>
+      <a id="nav-customize" href="#">Customize</a>
       <a href="#">Radar</a>
       <a href="login.html">Sign In</a>
     </div>
@@ -200,10 +234,10 @@
     <div class="hero-text">
       <h1>Your Calm in the Storm</h1>
       <p>Meet StormBuddy — a friendly, customizable balloon that helps you track weather, stay safe, and feel calm during rough conditions.</p>
-      <button class="cta">Customize Your Buddy</button>
+      <button id="btn-customize" class="cta">Customize Your Buddy</button>
     </div>
     <div class="mascot">
-      <div class="balloon">
+      <div id="balloon" class="balloon">
         <div class="eye left"></div>
         <div class="eye right"></div>
       </div>
@@ -211,10 +245,56 @@
     </div>
   </section>
 
+  <!-- Customization Panel -->
+  <section id="customizationPanel" class="customization">
+    <h2>Customize Your StormBuddy</h2>
+
+    <label for="colorPicker">Balloon Color</label>
+    <input type="color" id="colorPicker" value="#5ca9ff" />
+
+    <label for="eyeColorPicker">Eye Color</label>
+    <input type="color" id="eyeColorPicker" value="#000000" />
+  </section>
+
   <!-- Footer -->
   <footer>
     &copy; 2025 StormBuddy, Inc. All rights reserved.
   </footer>
+
+  <script>
+    const customizeBtn = document.getElementById('btn-customize');
+    const navCustomize = document.getElementById('nav-customize');
+    const customizationPanel = document.getElementById('customizationPanel');
+    const balloon = document.getElementById('balloon');
+    const eyeLeft = balloon.querySelector('.eye.left');
+    const eyeRight = balloon.querySelector('.eye.right');
+    const colorPicker = document.getElementById('colorPicker');
+    const eyeColorPicker = document.getElementById('eyeColorPicker');
+
+    function toggleCustomization() {
+      if (customizationPanel.classList.contains('active')) {
+        customizationPanel.classList.remove('active');
+      } else {
+        customizationPanel.classList.add('active');
+        customizationPanel.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    customizeBtn.addEventListener('click', toggleCustomization);
+    navCustomize.addEventListener('click', e => {
+      e.preventDefault();
+      toggleCustomization();
+    });
+
+    colorPicker.addEventListener('input', e => {
+      balloon.style.background = e.target.value;
+    });
+
+    eyeColorPicker.addEventListener('input', e => {
+      eyeLeft.style.background = e.target.value;
+      eyeRight.style.background = e.target.value;
+    });
+  </script>
 
 </body>
 </html>
