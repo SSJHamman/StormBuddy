@@ -253,7 +253,7 @@
           const lon = parseFloat(locData[0].lon);
 
           // 2. Fetch NOAA alerts feed (CAP XML)
-          fetch('https://alerts.weather.gov/cap/us.php?x=0')
+          fetch('https://api.allorigins.win/raw?url=https://alerts.weather.gov/cap/us.php?x=0')
             .then(res => res.text())
             .then(xmlStr => {
               const parser = new DOMParser();
