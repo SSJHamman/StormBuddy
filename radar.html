@@ -99,6 +99,10 @@
       color: var(--text);
     }
 
+    input::placeholder {
+      color: #9bbbd4; /* pastel placeholder */
+    }
+
     button {
       padding: 0 1.5rem;
       background: var(--accent);
@@ -170,31 +174,44 @@
       maxZoom: 16,
     }).addTo(map);
 
-    // Radar overlay tiles from RainViewer - live radar imagery
-    const radarLayer = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/{time}/256/{z}/{x}/{y}/2/1_1.png', {
-      attribution: 'Radar data © RainViewer',
-      maxZoom: 16,
-      opacity: 0.7,
-      className: 'radar-tile' // for CSS styling pastel filter
-    }).addTo(map);
+    let radarLayer = null;
 
     // Function to fetch current radar timestamp
     async function getLatestRadarTime() {
-      const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-      const data = await res.json();
-      // The latest radar timestamp is last in 'radar.past' array
-      const times = data.radar.past;
-      if (times.length > 0) return times[times.length - 1];
-      else return null;
+      try {
+        const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+        const data = await res.json();
+        const times = data.radar.past;
+        if (times.length > 0) return times[times.length - 1];
+        else return null;
+      } catch (e) {
+        console.error('Error fetching radar time:', e);
+        return null;
+      }
     }
 
     // Update radar layer with latest time every 5 mins
     async function updateRadar() {
       const latestTime = await getLatestRadarTime();
-      if (latestTime) {
-        radarLayer.setUrl(`https://tilecache.rainviewer.com/v2/radar/${latestTime}/256/{z}/{x}/{y}/2/1_1.png`);
+      if (!latestTime) {
+        console.warn('No latest radar time found.');
+        return;
+      }
+
+      const url = `https://tilecache.rainviewer.com/v2/radar/${latestTime}/256/{z}/{x}/{y}/2/1_1.png`;
+
+      if (!radarLayer) {
+        radarLayer = L.tileLayer(url, {
+          attribution: 'Radar data © RainViewer',
+          maxZoom: 16,
+          opacity: 0.7,
+          className: 'radar-tile'
+        }).addTo(map);
+      } else {
+        radarLayer.setUrl(url);
       }
     }
+
     updateRadar();
     setInterval(updateRadar, 5 * 60 * 1000); // every 5 minutes
 
