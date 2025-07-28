@@ -116,7 +116,7 @@
       const input = document.getElementById("locationInput").value;
       if (!input) return;
 
-      fetch(`https://us1.locationiq.com/v1/search?key=${API_KEY}&q=${encodeURIComponent(input)}&format=json`)
+      fetch(`https://api.locationiq.com/v1/search?key=${API_KEY}&q=${encodeURIComponent(input)}&format=json`)
         .then(res => res.json())
         .then(data => {
           const lat = parseFloat(data[0].lat);
