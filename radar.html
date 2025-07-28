@@ -14,7 +14,7 @@
 
   <style>
     :root {
-      --accent: #a0d8ff; /* pastel blue */
+      --accent: #a0d8ff;
       --bg: #f0f8ff;
       --text: #334e68;
       --box: #ffffff;
@@ -100,7 +100,7 @@
     }
 
     input::placeholder {
-      color: #9bbbd4; /* pastel placeholder */
+      color: #9bbbd4;
     }
 
     button {
@@ -116,7 +116,7 @@
     }
 
     button:hover {
-      background: #82caff; /* slightly darker pastel blue */
+      background: #82caff;
     }
 
     #map {
@@ -125,13 +125,6 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
       max-width: 1000px;
       margin: 0 auto;
-    }
-
-    /* Pastel-style filter on radar tiles */
-    .leaflet-tile-pane img.radar-tile {
-      filter: hue-rotate(190deg) saturate(60%) brightness(110%) sepia(0.15) drop-shadow(0 0 3px rgba(255, 182, 193, 0.4));
-      opacity: 0.7;
-      transition: filter 0.5s ease;
     }
   </style>
 </head>
@@ -144,98 +137,45 @@
 
   <div class="container">
     <h2>Check the Weather Radar</h2>
-    <p>Enter your location or ZIP to see live radar:</p>
+    <p>Enter your location or ZIP to see the map:</p>
 
     <div class="input-group">
       <input type="text" id="locationInput" placeholder="e.g. 90210 or New York" />
-      <button onclick="loadRadar()">Show Radar</button>
+      <button onclick="goToLocation()">Show Radar</button>
     </div>
 
     <div id="map"></div>
   </div>
 
   <!-- Leaflet JS -->
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1jEgeWy+c6tb7Qz6A/xQW67q9C8V3L9wRxz4WxBk="
-    crossorigin=""
-  ></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Initialize map with default center and zoom
-    const map = L.map('map').setView([37.7749, -122.4194], 6);
+    const map = L.map('map').setView([37.7749, -122.4194], 5);
 
-    // Base map layer - pastel styled tiles from Stamen Watercolor (soft, pastel watercolor look)
-    const baseLayer = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
+    // Pastel map from Stamen
+    L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
       attribution:
         'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
         '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> — ' +
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
-      maxZoom: 16,
+      maxZoom: 16
     }).addTo(map);
 
-    let radarLayer = null;
+    function goToLocation() {
+      const location = document.getElementById("locationInput").value.trim();
+      if (!location) return alert("Please enter a location.");
 
-    // Function to fetch current radar timestamp
-    async function getLatestRadarTime() {
-      try {
-        const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-        const data = await res.json();
-        const times = data.radar.past;
-        if (times.length > 0) return times[times.length - 1];
-        else return null;
-      } catch (e) {
-        console.error('Error fetching radar time:', e);
-        return null;
-      }
-    }
-
-    // Update radar layer with latest time every 5 mins
-    async function updateRadar() {
-      const latestTime = await getLatestRadarTime();
-      if (!latestTime) {
-        console.warn('No latest radar time found.');
-        return;
-      }
-
-      const url = `https://tilecache.rainviewer.com/v2/radar/${latestTime}/256/{z}/{x}/{y}/2/1_1.png`;
-
-      if (!radarLayer) {
-        radarLayer = L.tileLayer(url, {
-          attribution: 'Radar data © RainViewer',
-          maxZoom: 16,
-          opacity: 0.7,
-          className: 'radar-tile'
-        }).addTo(map);
-      } else {
-        radarLayer.setUrl(url);
-      }
-    }
-
-    updateRadar();
-    setInterval(updateRadar, 5 * 60 * 1000); // every 5 minutes
-
-    // Location search and move map there
-    function loadRadar() {
-      const location = document.getElementById('locationInput').value.trim();
-      if (!location) {
-        alert('Please enter a location.');
-        return;
-      }
-
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+      fetch(`https://us1.locationiq.com/v1/search?key=pk.fd8e4c4e75c3a69f1bb20d189726aa51&q=${encodeURIComponent(location)}&format=json`)
         .then(res => res.json())
         .then(data => {
-          if (!data.length) {
-            alert('Location not found. Try again.');
-            return;
-          }
+          if (!data || !data.length) return alert("Location not found.");
           const lat = parseFloat(data[0].lat);
           const lon = parseFloat(data[0].lon);
           map.setView([lat, lon], 8);
         })
         .catch(() => {
-          alert('Something went wrong. Try again.');
+          alert("Something went wrong. Try again.");
         });
     }
   </script>
