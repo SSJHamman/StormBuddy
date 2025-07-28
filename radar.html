@@ -1,74 +1,288 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>StormBuddy Radar</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #f0f8ff;
-    text-align: center;
-    margin: 0; padding: 2rem;
-  }
-  input, button {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    margin: 0.5rem;
-  }
-  button {
-    background: #a0d8ff;
-    border: none;
-    color: white;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #82caff;
-  }
-  iframe {
-    margin-top: 2rem;
-    border-radius: 20px;
-    border: none;
-    width: 90vw;
-    max-width: 1000px;
-    height: 500px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>🌩️ StormBuddy Alerts</title>
+  <style>
+    :root {
+      --accent: #a0d8ff; /* pastel blue */
+      --bg: #f9faff;
+      --text: #334e68;
+      --box: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.05);
+      --pastel-pink: #ffb6c1;
+      --pastel-green: #c8e6c9;
+      --pastel-yellow: #fff9c4;
+      --pastel-purple: #d1c4e9;
+    }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      margin: 0; padding: 0;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .navbar {
+      background: var(--box);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e1e7ef;
+      box-shadow: 0 2px 6px var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar .logo {
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+    .navbar a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .container {
+      max-width: 700px;
+      margin: 2rem auto 4rem;
+      padding: 0 1rem;
+      text-align: center;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+      color: #4a5a6a;
+    }
+    .input-group {
+      display: inline-flex;
+      background: var(--box);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--shadow);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    input[type="text"] {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: none;
+      outline: none;
+      width: 250px;
+      color: var(--text);
+    }
+    input::placeholder {
+      color: #9bbbd4;
+    }
+    button {
+      padding: 0 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+      border-radius: 0 12px 12px 0;
+    }
+    button:hover {
+      background: #82caff;
+    }
+    #alerts {
+      background: var(--box);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--shadow);
+      padding: 1rem 1.5rem;
+      text-align: left;
+      max-height: 400px;
+      overflow-y: auto;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: var(--text);
+    }
+    .alert-item {
+      border-left: 6px solid var(--accent);
+      margin-bottom: 1rem;
+      padding-left: 1rem;
+    }
+    .alert-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      margin-bottom: 0.25rem;
+      color: #d9534f; /* red-ish alert */
+    }
+    .alert-description {
+      color: #555;
+    }
+    .no-alerts {
+      font-style: italic;
+      color: #999;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
+  <div class="navbar">
+    <div class="logo">🌩️ StormBuddy</div>
+    <a href="index.html">Home</a>
+  </div>
 
-<h2>StormBuddy Weather Radar</h2>
-<p>Enter location or ZIP code:</p>
-<input id="locInput" type="text" placeholder="e.g. New York or 90210" />
-<button onclick="showRadar()">Show Radar</button>
+  <div class="container">
+    <h2>StormBuddy Weather Alerts</h2>
+    <p>Enter your city or ZIP code to get real-time weather alerts in your area.</p>
+    <div class="input-group">
+      <input type="text" id="locationInput" placeholder="e.g. 90210 or New York" />
+      <button id="checkBtn">Check Alerts</button>
+    </div>
+    <div id="alerts"><em>Enter a location and press "Check Alerts".</em></div>
+  </div>
 
-<iframe id="radarFrame" src="https://embed.rainviewer.com/map.html?loc=39.8283,-98.5795,4"></iframe>
+  <script>
+    const checkBtn = document.getElementById('checkBtn');
+    const alertsDiv = document.getElementById('alerts');
 
-<script>
-  function showRadar() {
-    const loc = document.getElementById('locInput').value.trim();
-    if (!loc) {
-      alert('Please enter a location or ZIP code');
-      return;
+    // Helper: Calculate distance between two lat/lon points (km) using Haversine formula
+    function getDistanceKm(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI/180) * Math.cos(lat2 * Math.PI/180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
     }
-    // Use Nominatim open free geocoding API (no keys, but very lightweight)
-    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc)}`)
-      .then(res => res.json())
-      .then(data => {
-        if (!data.length) {
-          alert('Location not found');
-          return;
-        }
-        const lat = data[0].lat;
-        const lon = data[0].lon;
-        // Update iframe src with new location & zoom 8 (zoom adjustable)
-        document.getElementById('radarFrame').src = `https://embed.rainviewer.com/map.html?loc=${lat},${lon},8`;
-      })
-      .catch(() => alert('Failed to find location'));
-  }
-</script>
 
+    // Parse CAP XML alerts and filter by distance from user location (~50km radius)
+    function parseAndFilterAlerts(xmlDoc, userLat, userLon) {
+      const alerts = [];
+      const entries = xmlDoc.getElementsByTagName('entry');
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+
+        // Extract summary/title and description
+        const titleEl = entry.getElementsByTagName('title')[0];
+        const summaryEl = entry.getElementsByTagName('summary')[0];
+        const capInfo = entry.getElementsByTagName('cap:event')[0] || entry;
+
+        // Find polygon or circle elements for area
+        const polygons = entry.getElementsByTagName('cap:polygon');
+        const circles = entry.getElementsByTagName('cap:circle');
+
+        // Extract event text
+        const title = titleEl ? titleEl.textContent : 'No Title';
+        const description = summaryEl ? summaryEl.textContent : 'No Description';
+
+        // If no polygon or circle, include alert (can't check location)
+        if (polygons.length === 0 && circles.length === 0) {
+          alerts.push({title, description});
+          continue;
+        }
+
+        // We'll approximate: For polygons, check centroid distance to user
+        // For circles, check center distance to user and radius
+
+        let includeAlert = false;
+
+        for (let p = 0; p < polygons.length; p++) {
+          const polyText = polygons[p].textContent.trim();
+          // Polygon points like "lat,lon lat,lon ..."
+          const points = polyText.split(' ').map(pair => {
+            const [lat, lon] = pair.split(',').map(Number);
+            return {lat, lon};
+          });
+          // Approximate centroid
+          const centroid = {
+            lat: points.reduce((sum, pt) => sum + pt.lat, 0) / points.length,
+            lon: points.reduce((sum, pt) => sum + pt.lon, 0) / points.length
+          };
+          const dist = getDistanceKm(userLat, userLon, centroid.lat, centroid.lon);
+          if (dist < 50) {
+            includeAlert = true;
+            break;
+          }
+        }
+
+        for (let c = 0; c < circles.length && !includeAlert; c++) {
+          const circText = circles[c].textContent.trim();
+          // Circle format: "lat,lon radius(km)"
+          const [centerStr, radiusStr] = circText.split(' ');
+          const [lat, lon] = centerStr.split(',').map(Number);
+          const radius = parseFloat(radiusStr);
+          const dist = getDistanceKm(userLat, userLon, lat, lon);
+          if (dist <= radius) {
+            includeAlert = true;
+            break;
+          }
+        }
+
+        if (includeAlert) {
+          alerts.push({title, description});
+        }
+      }
+
+      return alerts;
+    }
+
+    checkBtn.addEventListener('click', () => {
+      const location = document.getElementById('locationInput').value.trim();
+      if (!location) {
+        alertsDiv.innerHTML = '<em>Please enter a location.</em>';
+        return;
+      }
+
+      alertsDiv.innerHTML = '<em>Looking up location and alerts...</em>';
+
+      // 1. Geocode with Nominatim (free, no key)
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
+        .then(res => res.json())
+        .then(locData => {
+          if (!locData.length) {
+            alertsDiv.innerHTML = '<em>Location not found. Try another.</em>';
+            return;
+          }
+
+          const lat = parseFloat(locData[0].lat);
+          const lon = parseFloat(locData[0].lon);
+
+          // 2. Fetch NOAA alerts feed (CAP XML)
+          fetch('https://alerts.weather.gov/cap/us.php?x=0')
+            .then(res => res.text())
+            .then(xmlStr => {
+              const parser = new DOMParser();
+              const xmlDoc = parser.parseFromString(xmlStr, "application/xml");
+
+              const alerts = parseAndFilterAlerts(xmlDoc, lat, lon);
+
+              if (alerts.length === 0) {
+                alertsDiv.innerHTML = '<em>No active weather alerts in your area.</em>';
+              } else {
+                alertsDiv.innerHTML = '';
+                alerts.forEach(alert => {
+                  const div = document.createElement('div');
+                  div.className = 'alert-item';
+                  div.innerHTML = `
+                    <div class="alert-title">⚠️ ${alert.title}</div>
+                    <div class="alert-description">${alert.description}</div>
+                  `;
+                  alertsDiv.appendChild(div);
+                });
+              }
+            }).catch(() => {
+              alertsDiv.innerHTML = '<em>Could not fetch weather alerts.</em>';
+            });
+
+        }).catch(() => {
+          alertsDiv.innerHTML = '<em>Failed to get location data.</em>';
+        });
+    });
+  </script>
 </body>
 </html>
