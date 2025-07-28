@@ -1,188 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF‑8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>StormBuddy Radar</title>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    body {
-      font-family: 'Outfit', sans-serif;
-      margin: 0; padding: 0;
-      background: #f4f9fe;
-      color: #102a43;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .navbar {
-      width: 100%;
-      height: 70px;
-      background: white;
-      border-bottom: 1px solid #e1e7ef;
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      box-sizing: border-box;
-    }
-    .navbar .logo {
-      font-weight: 700;
-      color: #0072ff;
-      font-size: 1.5rem;
-    }
-    .nav-links {
-      margin-left: auto;
-    }
-    .nav-links a {
-      text-decoration: none;
-      color: #102a43;
-      font-weight: 500;
-      margin-left: 20px;
-      cursor: pointer;
-    }
-    .nav-links a:hover {
-      color: #0072ff;
-    }
-    #inputForm {
-      margin: 20px 0;
-      display: flex;
-      gap: 10px;
-    }
-    #locationInput {
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 250px;
-    }
-    #submitBtn {
-      background: #0072ff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #submitBtn:hover {
-      background: #005cd0;
-    }
-    #map {
-      width: 90vw;
-      max-width: 900px;
-      height: 500px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      margin-bottom: 40px;
-    }
-    .message {
-      color: #d9534f;
-      margin-top: 10px;
-    }
+    body { font-family: 'Outfit', sans-serif; margin:0; background:#f4f9fe; color:#102a43; }
+    .navbar { height:70px; background:#fff; display:flex; align-items:center; padding:0 20px; border-bottom:1px solid #e1e7ef; }
+    .navbar .logo { font-size:1.5rem; font-weight:700; color:#0072ff; }
+    .nav-links { margin-left:auto; }
+    .nav-links a { text-decoration:none; color:#102a43; font-weight:500; cursor:pointer; }
+    .nav-links a:hover { color:#0072ff; }
+    #inputForm { margin:20px 0; display:flex; gap:8px; justify-content:center; }
+    #locationInput { padding:8px; font-size:1rem; width:200px; border-radius:6px; border:1px solid #ccc; }
+    #submitBtn { padding:8px 16px; background:#0072ff; color:#fff; border:none; border-radius:6px; font-weight:600; cursor:pointer; }
+    #submitBtn:hover { background:#005cd0; }
+    #message { text-align:center; color:#d9534f; margin-bottom:8px; }
+    #map { width:90vw; max-width:900px; height:500px; margin:auto 0 40px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); display:none; }
+    footer { text-align:center; padding:2rem 1rem; background:#fff; font-size:0.9rem; color:#768ca3; border-top:1px solid #e1e8f0; }
   </style>
 </head>
 <body>
 
   <nav class="navbar">
     <div class="logo">🌩️ StormBuddy</div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-    </div>
+    <div class="nav-links"><a href="index.html">Home</a></div>
   </nav>
 
   <form id="inputForm">
-    <input type="text" id="locationInput" placeholder="Enter city or ZIP code" required />
+    <input type="text" id="locationInput" placeholder="Enter city or ZIP code" required/>
     <button type="submit" id="submitBtn">Show Radar</button>
   </form>
+  <div id="message"></div>
 
-  <div id="message" class="message"></div>
+  <div id="map"></div>
 
-  <div id="map" style="display:none;"></div>
+  <footer>&copy; 2025 StormBuddy, Inc. All rights reserved.</footer>
 
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    const form = document.getElementById('inputForm');
-    const input = document.getElementById('locationInput');
-    const messageDiv = document.getElementById('message');
-    const mapDiv = document.getElementById('map');
-    let map, radarCircles = [];
+    const form = document.getElementById('inputForm'),
+          input = document.getElementById('locationInput'),
+          message = document.getElementById('message'),
+          mapDiv = document.getElementById('map');
+    let map, radarLayer;
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
-      messageDiv.textContent = '';
-      const query = input.value.trim();
-      if (!query) {
-        messageDiv.textContent = 'Please enter a city or ZIP code.';
-        return;
-      }
+      message.textContent = '';
+      const q = input.value.trim();
+      if (!q) return message.textContent = 'Please enter a location or ZIP code.';
 
-      // Use Nominatim to get coordinates
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
-
+      // 1. Geocode with Nominatim
+      let geo;
       try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (!data.length) {
-          messageDiv.textContent = 'Location not found. Try another city or ZIP code.';
-          return;
-        }
-
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-
-        showMap(lat, lon);
-      } catch (err) {
-        messageDiv.textContent = 'Error fetching location. Please try again later.';
-        console.error(err);
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}`);
+        geo = await res.json();
+      } catch {
+        return message.textContent = 'Geocoding failed. Please try again.';
       }
-    });
+      if (!geo.length) return message.textContent = 'Location not found.';
 
-    function showMap(lat, lon) {
+      const lat = parseFloat(geo[0].lat), lon = parseFloat(geo[0].lon);
+
+      // 2. Create/update map
       mapDiv.style.display = 'block';
-
       if (!map) {
-        map = L.map('map').setView([lat, lon], 10);
-
+        map = L.map('map').setView([lat, lon], 8);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data © OpenStreetMap contributors'
+          attribution: '© OpenStreetMap contributors'
         }).addTo(map);
       } else {
-        map.setView([lat, lon], 10);
-        radarCircles.forEach(circle => map.removeLayer(circle));
-        radarCircles = [];
+        map.setView([lat, lon], 8);
+        if (radarLayer) map.removeLayer(radarLayer);
       }
 
-      // Add simple radar blobs (you can customize this)
-      const rainAreas = [
-        { lat: lat + 0.05, lng: lon - 0.05, intensity: 'light' },
-        { lat: lat - 0.03, lng: lon + 0.04, intensity: 'moderate' },
-        { lat: lat + 0.01, lng: lon + 0.03, intensity: 'heavy' }
-      ];
+      // 3. Add real precipitation radar overlay
+      const time = Math.floor(Date.now()/600000)*600; // nearest 10-min interval
+      const appid = 'b9d33bea8d942f0252878002ea5e34b6';
+      const urlTemplate = `https://maps.openweathermap.org/maps/2.0/radar/{z}/{x}/{y}?appid=${appid}&tm=${time}`;
 
-      rainAreas.forEach(area => {
-        let color;
-        switch (area.intensity) {
-          case 'light': color = 'rgba(135,206,250,0.3)'; break;    // pastel light blue
-          case 'moderate': color = 'rgba(30,144,255,0.5)'; break;   // medium blue
-          case 'heavy': color = 'rgba(0,0,255,0.7)'; break;         // strong blue
-        }
-
-        const circle = L.circle([area.lat, area.lng], {
-          color: color,
-          fillColor: color,
-          fillOpacity: 0.5,
-          radius: 5000
-        }).addTo(map).bindPopup(`Rain intensity: ${area.intensity}`);
-
-        radarCircles.push(circle);
-      });
-    }
+      radarLayer = L.tileLayer(urlTemplate, { opacity: 0.5, tileSize: 256, zIndex: 5 })
+                     .addTo(map);
+    });
   </script>
-
 </body>
 </html>
