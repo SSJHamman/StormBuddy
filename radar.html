@@ -4,11 +4,20 @@
   <meta charset="UTF-8" />
   <title>StormBuddy Radar</title>
   <style>
+    :root {
+      --accent: #0072ff;
+      --bg: #f0f8ff;
+      --text: #1a2c3b;
+      --box: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.05);
+    }
+
     body {
       font-family: 'Outfit', sans-serif;
-      background: #f0f8ff;
+      background: var(--bg);
       margin: 0;
       padding: 0;
+      color: var(--text);
     }
 
     .navbar {
@@ -16,19 +25,25 @@
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
-      border-bottom: 1px solid #ccc;
+      align-items: center;
+      border-bottom: 1px solid #e1e7ef;
     }
 
     .navbar .logo {
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #0072ff;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--accent);
     }
 
     .navbar a {
-      color: #333;
+      color: var(--text);
       text-decoration: none;
       font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .navbar a:hover {
+      color: var(--accent);
     }
 
     .container {
@@ -36,30 +51,56 @@
       text-align: center;
     }
 
-    input[type="text"] {
-      padding: 0.6rem;
-      width: 200px;
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
       font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      color: #4a5a6a;
+    }
+
+    .input-group {
+      display: inline-flex;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px var(--shadow);
+      overflow: hidden;
+    }
+
+    input[type="text"] {
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border: none;
+      outline: none;
+      width: 220px;
     }
 
     button {
-      padding: 0.6rem 1rem;
-      background: #0072ff;
+      padding: 0 1.5rem;
+      background: var(--accent);
       color: white;
       border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      margin-left: 0.5rem;
+      font-size: 1rem;
       cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #005cd0;
     }
 
     iframe {
       margin-top: 2rem;
-      width: 100%;
+      width: 90%;
+      max-width: 1000px;
       height: 500px;
       border: none;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
     }
   </style>
 </head>
@@ -71,12 +112,17 @@
   </div>
 
   <div class="container">
-    <h2>Check the Radar</h2>
-    <p>Enter your city or ZIP code:</p>
-    <input type="text" id="locationInput" placeholder="e.g. 90210 or New York" />
-    <button onclick="loadRadar()">Show Radar</button>
+    <h2>Check the Weather Radar</h2>
+    <p>Enter your location or ZIP to see live radar:</p>
 
-    <iframe id="radarFrame" src="https://embed.windy.com/embed2.html?lat=37.7749&lon=-122.4194&zoom=6&level=surface&overlay=radar&menu=&message=true&marker=true&calendar=now&detail=true&type=map"></iframe>
+    <div class="input-group">
+      <input type="text" id="locationInput" placeholder="e.g. 90210 or New York" />
+      <button onclick="loadRadar()">Show Radar</button>
+    </div>
+
+    <iframe id="radarFrame"
+      src="https://embed.windy.com/embed2.html?lat=37.7749&lon=-122.4194&zoom=6&level=surface&overlay=radar&menu=&message=true&marker=true&calendar=now&detail=true&type=map">
+    </iframe>
   </div>
 
   <script>
@@ -104,7 +150,7 @@
         })
         .catch(err => {
           console.error("Error fetching location:", err);
-          alert("Something went wrong. Try a different location.");
+          alert("Something went wrong. Try again.");
         });
     }
   </script>
