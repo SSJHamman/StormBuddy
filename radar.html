@@ -1,137 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>StormBuddy Radar</title>
-
-  <!-- Leaflet for LocationIQ -->
-  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
-
-  <style>
-    :root {
-      --accent: #a0d8ff;
-      --bg: #f9faff;
-      --text: #334e68;
-      --box: #ffffff;
-      --shadow: rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--bg);
-      margin: 0;
-      padding: 0;
-      color: var(--text);
-    }
-
-    .navbar {
-      background: var(--box);
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #e1e7ef;
-      box-shadow: 0 2px 6px var(--shadow);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    .navbar .logo {
-      font-weight: 700;
-      font-size: 1.4rem;
-      color: var(--accent);
-    }
-
-    .navbar a {
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-    }
-
-    .container {
-      padding: 2rem;
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    input[type="text"] {
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      width: 220px;
-    }
-
-    button {
-      padding: 0.75rem 1.5rem;
-      margin-left: 10px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 10px;
-      font-weight: 600;
-    }
-
-    #map {
-      height: 500px;
-      width: 90%;
-      max-width: 1000px;
-      margin: 2rem auto 0;
-      border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>StormBuddy Radar</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f8ff;
+    text-align: center;
+    margin: 0; padding: 2rem;
+  }
+  input, button {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin: 0.5rem;
+  }
+  button {
+    background: #a0d8ff;
+    border: none;
+    color: white;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #82caff;
+  }
+  iframe {
+    margin-top: 2rem;
+    border-radius: 20px;
+    border: none;
+    width: 90vw;
+    max-width: 1000px;
+    height: 500px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  }
+</style>
 </head>
 <body>
 
-  <div class="navbar">
-    <div class="logo">🌩️ StormBuddy</div>
-    <a href="index.html">Home</a>
-  </div>
+<h2>StormBuddy Weather Radar</h2>
+<p>Enter location or ZIP code:</p>
+<input id="locInput" type="text" placeholder="e.g. New York or 90210" />
+<button onclick="showRadar()">Show Radar</button>
 
-  <div class="container">
-    <h2>Check the Weather Radar</h2>
-    <p>Enter your ZIP code or location:</p>
-    <input type="text" id="locationInput" placeholder="e.g. 90210 or New York" />
-    <button onclick="goToLocation()">Show Radar</button>
-    <div id="map"></div>
-  </div>
+<iframe id="radarFrame" src="https://embed.rainviewer.com/map.html?loc=39.8283,-98.5795,4"></iframe>
 
-  <script>
-    const API_KEY = 'pk.fd8e4c4e75c3a69f1bb20d189726aa51';
-
-    const map = L.map('map').setView([39.8283, -98.5795], 4); // USA center
-
-    // StormBuddy-styled pastel tile layer (uses "light" theme)
-    L.tileLayer(`https://maps.locationiq.com/v3/tiles/light/{z}/{x}/{y}.png?key=${API_KEY}`, {
-  attribution: '&copy; <a href="https://locationiq.com/">LocationIQ</a>',
-  tileSize: 256,
-  maxZoom: 18
-}).addTo(map);
-
-    function goToLocation() {
-      const input = document.getElementById("locationInput").value;
-      if (!input) return;
-
-      fetch(`https://api.locationiq.com/v1/search?key=${API_KEY}&q=${encodeURIComponent(input)}&format=json`)
-        .then(res => res.json())
-        .then(data => {
-          const lat = parseFloat(data[0].lat);
-          const lon = parseFloat(data[0].lon);
-          map.setView([lat, lon], 10);
-          L.marker([lat, lon]).addTo(map);
-        })
-        .catch(err => {
-          console.error(err);
-          alert("Location not found.");
-        });
+<script>
+  function showRadar() {
+    const loc = document.getElementById('locInput').value.trim();
+    if (!loc) {
+      alert('Please enter a location or ZIP code');
+      return;
     }
-  </script>
+    // Use Nominatim open free geocoding API (no keys, but very lightweight)
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(loc)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (!data.length) {
+          alert('Location not found');
+          return;
+        }
+        const lat = data[0].lat;
+        const lon = data[0].lon;
+        // Update iframe src with new location & zoom 8 (zoom adjustable)
+        document.getElementById('radarFrame').src = `https://embed.rainviewer.com/map.html?loc=${lat},${lon},8`;
+      })
+      .catch(() => alert('Failed to find location'));
+  }
+</script>
 
 </body>
 </html>
