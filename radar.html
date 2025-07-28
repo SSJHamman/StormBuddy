@@ -3,13 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <title>StormBuddy Radar</title>
+
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-o9N1jEgeWy+c6tb7Qz6A/xQW67q9C8V3L9wRxz4WxBk="
+    crossorigin=""
+  />
+
   <style>
     :root {
-      --accent: #0072ff;
+      --accent: #a0d8ff; /* pastel blue */
       --bg: #f0f8ff;
-      --text: #1a2c3b;
+      --text: #334e68;
       --box: #ffffff;
       --shadow: rgba(0, 0, 0, 0.05);
+      --pastel-pink: #ffb6c1;
+      --pastel-green: #c8e6c9;
+      --pastel-yellow: #fff9c4;
+      --pastel-purple: #d1c4e9;
     }
 
     body {
@@ -21,12 +34,16 @@
     }
 
     .navbar {
-      background: white;
+      background: var(--box);
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid #e1e7ef;
+      box-shadow: 0 2px 6px var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
     }
 
     .navbar .logo {
@@ -49,6 +66,8 @@
     .container {
       padding: 2rem;
       text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
     }
 
     h2 {
@@ -64,10 +83,11 @@
 
     .input-group {
       display: inline-flex;
-      background: white;
+      background: var(--box);
       border-radius: 12px;
       box-shadow: 0 4px 10px var(--shadow);
       overflow: hidden;
+      margin-bottom: 1.5rem;
     }
 
     input[type="text"] {
@@ -76,6 +96,7 @@
       border: none;
       outline: none;
       width: 220px;
+      color: var(--text);
     }
 
     button {
@@ -87,20 +108,26 @@
       cursor: pointer;
       font-weight: 600;
       transition: background 0.3s;
+      border-radius: 0 12px 12px 0;
     }
 
     button:hover {
-      background: #005cd0;
+      background: #82caff; /* slightly darker pastel blue */
     }
 
-    iframe {
-      margin-top: 2rem;
-      width: 90%;
-      max-width: 1000px;
+    #map {
       height: 500px;
-      border: none;
       border-radius: 20px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.07);
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Pastel-style filter on radar tiles */
+    .leaflet-tile-pane img.radar-tile {
+      filter: hue-rotate(190deg) saturate(60%) brightness(110%) sepia(0.15) drop-shadow(0 0 3px rgba(255, 182, 193, 0.4));
+      opacity: 0.7;
+      transition: filter 0.5s ease;
     }
   </style>
 </head>
@@ -120,37 +147,78 @@
       <button onclick="loadRadar()">Show Radar</button>
     </div>
 
-    <iframe id="radarFrame"
-      src="https://embed.windy.com/embed2.html?lat=37.7749&lon=-122.4194&zoom=6&level=surface&overlay=radar&menu=&message=true&marker=true&calendar=now&detail=true&type=map">
-    </iframe>
+    <div id="map"></div>
   </div>
 
-  <script>
-    function loadRadar() {
-      const location = document.getElementById("locationInput").value;
+  <!-- Leaflet JS -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1jEgeWy+c6tb7Qz6A/xQW67q9C8V3L9wRxz4WxBk="
+    crossorigin=""
+  ></script>
 
+  <script>
+    // Initialize map with default center and zoom
+    const map = L.map('map').setView([37.7749, -122.4194], 6);
+
+    // Base map layer - pastel styled tiles from Stamen Watercolor (soft, pastel watercolor look)
+    const baseLayer = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg', {
+      attribution:
+        'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+        '<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> — ' +
+        'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+      maxZoom: 16,
+    }).addTo(map);
+
+    // Radar overlay tiles from RainViewer - live radar imagery
+    const radarLayer = L.tileLayer('https://tilecache.rainviewer.com/v2/radar/{time}/256/{z}/{x}/{y}/2/1_1.png', {
+      attribution: 'Radar data © RainViewer',
+      maxZoom: 16,
+      opacity: 0.7,
+      className: 'radar-tile' // for CSS styling pastel filter
+    }).addTo(map);
+
+    // Function to fetch current radar timestamp
+    async function getLatestRadarTime() {
+      const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+      const data = await res.json();
+      // The latest radar timestamp is last in 'radar.past' array
+      const times = data.radar.past;
+      if (times.length > 0) return times[times.length - 1];
+      else return null;
+    }
+
+    // Update radar layer with latest time every 5 mins
+    async function updateRadar() {
+      const latestTime = await getLatestRadarTime();
+      if (latestTime) {
+        radarLayer.setUrl(`https://tilecache.rainviewer.com/v2/radar/${latestTime}/256/{z}/{x}/{y}/2/1_1.png`);
+      }
+    }
+    updateRadar();
+    setInterval(updateRadar, 5 * 60 * 1000); // every 5 minutes
+
+    // Location search and move map there
+    function loadRadar() {
+      const location = document.getElementById('locationInput').value.trim();
       if (!location) {
-        alert("Please enter a location.");
+        alert('Please enter a location.');
         return;
       }
 
       fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`)
         .then(res => res.json())
         .then(data => {
-          if (data.length === 0) {
-            alert("Location not found. Try again.");
+          if (!data.length) {
+            alert('Location not found. Try again.');
             return;
           }
-
-          const lat = data[0].lat;
-          const lon = data[0].lon;
-
-          const radarURL = `https://embed.windy.com/embed2.html?lat=${lat}&lon=${lon}&zoom=7&level=surface&overlay=radar&menu=&message=true&marker=true&calendar=now&detail=true&type=map`;
-          document.getElementById("radarFrame").src = radarURL;
+          const lat = parseFloat(data[0].lat);
+          const lon = parseFloat(data[0].lon);
+          map.setView([lat, lon], 8);
         })
-        .catch(err => {
-          console.error("Error fetching location:", err);
-          alert("Something went wrong. Try again.");
+        .catch(() => {
+          alert('Something went wrong. Try again.');
         });
     }
   </script>
