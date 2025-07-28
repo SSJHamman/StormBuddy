@@ -108,9 +108,11 @@
     const map = L.map('map').setView([39.8283, -98.5795], 4); // USA center
 
     // StormBuddy-styled pastel tile layer (uses "light" theme)
-    L.tileLayer(`https://tiles.locationiq.com/v3/streets/light/{z}/{x}/{y}.png?key=${API_KEY}`, {
-      attribution: '&copy; <a href="https://locationiq.com">LocationIQ</a>',
-    }).addTo(map);
+    L.tileLayer(`https://maps.locationiq.com/v3/tiles/light/{z}/{x}/{y}.png?key=${API_KEY}`, {
+  attribution: '&copy; <a href="https://locationiq.com/">LocationIQ</a>',
+  tileSize: 256,
+  maxZoom: 18
+}).addTo(map);
 
     function goToLocation() {
       const input = document.getElementById("locationInput").value;
