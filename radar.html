@@ -61,8 +61,8 @@
         const city = geoData[0].display_name.split(',')[0];
 
         // Step 2: Get weather from Open-Meteo
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
-        const weatherData = await weatherRes.json();
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`);
+const weatherData = await weatherRes.json();
 
         if (!weatherData.current_weather) {
           output.textContent = 'Weather data not available.';
